@@ -13,8 +13,8 @@ namespace Encrypter.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        #region Properties
         private int Offset => Convert.ToInt32(Properties.Resources.Offset);
+
         public ICommand ReadTextFileCommand => new RelayCommand(() =>
         {
             var dialog = new OpenFileDialog();
@@ -64,9 +64,6 @@ namespace Encrypter.ViewModels
             get { return _secretWriteKey; }
             set { _secretWriteKey = value; RaisePropertyChanged(nameof(SecretWriteKey)); }
         }
-        #endregion
-
-        #region Public Methods
 
         public void InvokeReadTextFileCommand()
         {
@@ -77,10 +74,6 @@ namespace Encrypter.ViewModels
         {
             SaveFileCommand.Execute(null);
         }
-
-        #endregion
-
-        #region Private Methods
 
         private void ReadFileContent(string filePath)
         {
@@ -127,9 +120,10 @@ namespace Encrypter.ViewModels
             {
                 var builder = new StringBuilder();
                 var offset = GetCharactersSum(SecretWriteKey) + Offset;
+                int index = 0;
                 foreach (var c in text)
                 {
-                    var element = Convert.ToChar(((c + offset) % 512));
+                    var element = Convert.ToChar(((c + offset + GetCharacterOffset(SecretWriteKey[index++ % SecretWriteKey.Length])) % 512));
                     builder.Append(element);
                 }
 
@@ -148,22 +142,24 @@ namespace Encrypter.ViewModels
             {
                 var builder = new StringBuilder();
                 var offset = GetCharactersSum(SecretReadKey) + Offset;
+                int index = 0;
                 foreach (var c in text)
                 {
-                    var baseModulo = offset % 512;
+                    var currentOffset = offset + GetCharacterOffset(SecretReadKey[index++ % SecretReadKey.Length]);
+                    var baseModulo = currentOffset % 512;
                     char character;
                     if (baseModulo > c)
                     {
-                        var x = offset / 512;
+                        var x = currentOffset / 512;
                         var y = x + 1;
                         var offsetUsedWhileCrypting = y * 512 + c;
-                        character = Convert.ToChar(offsetUsedWhileCrypting - offset);
+                        character = Convert.ToChar(offsetUsedWhileCrypting - currentOffset);
                     }
                     else
                     {
-                        var y = offset / 512;
+                        var y = currentOffset / 512;
                         var offsetUsedWhileCrypting = y * 512 + c;
-                        character = Convert.ToChar(offsetUsedWhileCrypting - offset);
+                        character = Convert.ToChar(offsetUsedWhileCrypting - currentOffset);
                     }
 
                     builder.Append(character);
@@ -180,27 +176,23 @@ namespace Encrypter.ViewModels
 
         private int GetCharactersSum(string text)
         {
-            try
+            if (text == null)
             {
-                if (text == null)
-                {
-                    return 0;
-                }
-
-                int sum = 0;
-                int index = 8;
-                foreach (var c in text)
-                {
-                    sum += (int)c * index++ / 5;
-                }
-                return sum;
-            }
-            catch (Exception ex)
-            {
-                TextRead = ex.Message;
                 return 0;
             }
+
+            int sum = 0;
+            int index = 8;
+            foreach (var c in text)
+            {
+                sum += (c * index++ + 211) / 5;
+            }
+            return sum;
         }
-#endregion
+
+        private int GetCharacterOffset(char c)
+        {
+            return (c + 11 * 23) + (c - 8) * 11 + (3 * c) + 144 - 2 * c;
+        }
     }
 }
