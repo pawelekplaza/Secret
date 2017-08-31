@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Encrypter"
         mc:Ignorable="d"
-        Title="Secret" Height="720" Width="1080"
+        Title="Encrypter" Height="720" Width="1080"
         MinWidth="640"
         MinHeight="480">
     <Grid>
@@ -20,8 +20,8 @@
                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"
                     Command="{Binding ReadTextFileCommand}"/>
                 <Label Content="Secret keys: " VerticalAlignment="Top" Margin="10,15,0,0"/>
-                <PasswordBox x:Name="secretReadKeyPasswordBox" Width="150" Height="20" VerticalAlignment="Top" Margin="10,20,0,0" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged"/>
-                <PasswordBox x:Name="secondSecretReadKeyPasswordBox" Width="150" Height="20" VerticalAlignment="Top" Margin="10,20,0,0" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged"/>
+                <PasswordBox x:Name="secretReadKeyPasswordBox" Width="150" Height="20" VerticalAlignment="Top" Margin="10,20,0,0" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged" GotFocus="secretKey_GotFocus"/>
+                <PasswordBox x:Name="secondSecretReadKeyPasswordBox" Width="150" Height="20" VerticalAlignment="Top" Margin="10,20,0,0" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged" GotFocus="secretKey_GotFocus"/>
             </StackPanel>
             <TextBox Text="{Binding TextRead, FallbackValue='Text read from a file.'}"
                      Margin="20,45,20,10" Padding="5" IsReadOnly="True" 
@@ -40,8 +40,8 @@
             </TextBox>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
                 <Label Content="Secret keys: " Margin="0,-5,0,0"/>
-                <PasswordBox x:Name="secretWriteKeyPasswordBox" Width="150" Height="20" Margin="0,0,10,20" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged"/>
-                <PasswordBox x:Name="secondSecretWriteKeyPasswordBox" Width="150" Height="20" Margin="0,0,10,20" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged"/>
+                <PasswordBox x:Name="secretWriteKeyPasswordBox" Width="150" Height="20" Margin="0,0,10,20" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged" GotFocus="secretKey_GotFocus"/>
+                <PasswordBox x:Name="secondSecretWriteKeyPasswordBox" Width="150" Height="20" Margin="0,0,10,20" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged" GotFocus="secretKey_GotFocus"/>
                 <Button Content="Save file" Width="100" Height="20" 
                     Margin="0,0,20,20" 
                     Command="{Binding SaveFileCommand}"/>

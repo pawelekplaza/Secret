@@ -72,5 +72,11 @@ namespace Encrypter
                 viewModel.SecondSecretWriteKey = s.Password;
             }            
         }
+
+        private void secretKey_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var s = sender as PasswordBox;
+            s.SelectAll();
+        }
     }
 }
