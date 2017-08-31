@@ -38,11 +38,12 @@ namespace Encrypter
             }
 
             var s = sender as PasswordBox;
-            if (s == secretReadKeyPasswordBox)
+            if (s == secretReadKeyPasswordBox || s == secondSecretReadKeyPasswordBox)
             {
                 viewModel.InvokeReadTextFileCommand();
             }
-            else if (s == secretWriteKeyPasswordBox)
+
+            if (s == secretWriteKeyPasswordBox || s == secondSecretWriteKeyPasswordBox)
             {
                 viewModel.InvokeSaveFileCommand();
             }
@@ -56,10 +57,20 @@ namespace Encrypter
                 viewModel.SecretReadKey = s.Password;
             }
 
+            if (s == secondSecretReadKeyPasswordBox)
+            {
+                viewModel.SecondSecretReadKey = s.Password;
+            }
+
             if (s == secretWriteKeyPasswordBox)
             {
                 viewModel.SecretWriteKey = s.Password;
             }
+
+            if (s == secondSecretWriteKeyPasswordBox)
+            {
+                viewModel.SecondSecretWriteKey = s.Password;
+            }            
         }
     }
 }

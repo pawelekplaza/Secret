@@ -19,8 +19,9 @@
                 <Button Content="Read file" Width="100" Height="20" 
                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0"
                     Command="{Binding ReadTextFileCommand}"/>
-                <Label Content="Secret key: " VerticalAlignment="Top" Margin="10,15,0,0"/>
+                <Label Content="Secret keys: " VerticalAlignment="Top" Margin="10,15,0,0"/>
                 <PasswordBox x:Name="secretReadKeyPasswordBox" Width="150" Height="20" VerticalAlignment="Top" Margin="10,20,0,0" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged"/>
+                <PasswordBox x:Name="secondSecretReadKeyPasswordBox" Width="150" Height="20" VerticalAlignment="Top" Margin="10,20,0,0" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged"/>
             </StackPanel>
             <TextBox Text="{Binding TextRead, FallbackValue='Text read from a file.'}"
                      Margin="20,45,20,10" Padding="5" IsReadOnly="True" 
@@ -38,8 +39,9 @@
                      AcceptsReturn="True">
             </TextBox>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                <Label Content="Secret key: " Margin="0,-5,0,0"/>
+                <Label Content="Secret keys: " Margin="0,-5,0,0"/>
                 <PasswordBox x:Name="secretWriteKeyPasswordBox" Width="150" Height="20" Margin="0,0,10,20" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged"/>
+                <PasswordBox x:Name="secondSecretWriteKeyPasswordBox" Width="150" Height="20" Margin="0,0,10,20" KeyDown="secretKey_KeyDown" PasswordChanged="secretKeyChanged"/>
                 <Button Content="Save file" Width="100" Height="20" 
                     Margin="0,0,20,20" 
                     Command="{Binding SaveFileCommand}"/>
