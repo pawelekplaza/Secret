@@ -14,6 +14,7 @@ namespace Encrypter.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private int Offset => Convert.ToInt32(Properties.Resources.Offset);
+        private string _readFilePath = "";
 
         public ICommand ReadTextFileCommand => new RelayCommand(() =>
         {
@@ -22,7 +23,8 @@ namespace Encrypter.ViewModels
 
             if (result == true)
             {
-                ReadFileContent(dialog.FileName);
+                _readFilePath = dialog.FileName;
+                ReadFileContent(_readFilePath);
             }
         });
 
@@ -55,14 +57,24 @@ namespace Encrypter.ViewModels
         public string SecretReadKey
         {
             get { return _secretReadKey ?? ""; }
-            set { _secretReadKey = value; RaisePropertyChanged(nameof(SecretReadKey)); }
+            set
+            {
+                _secretReadKey = value;
+                ReadFileContent(_readFilePath);
+                RaisePropertyChanged(nameof(SecretReadKey));
+            }
         }
 
         private string _secondSecretReadKey;    
         public string SecondSecretReadKey
         {
             get { return _secondSecretReadKey ?? ""; }
-            set { _secondSecretReadKey = value; RaisePropertyChanged(nameof(SecondSecretReadKey)); }
+            set
+            {
+                _secondSecretReadKey = value;
+                ReadFileContent(_readFilePath);
+                RaisePropertyChanged(nameof(SecondSecretReadKey));
+            }
         }
 
         private string _secretWriteKey;
