@@ -116,6 +116,10 @@ namespace Encrypter.ViewModels
                     TextRead = encrypted;
                 }
             }
+            catch (ArgumentException)
+            {
+                TextRead = "There is no file loaded to view its content.";
+            }
             catch (Exception ex)
             {
                 TextRead = ex.Message;                  
