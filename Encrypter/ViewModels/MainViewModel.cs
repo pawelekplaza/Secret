@@ -7,13 +7,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Encrypter.ViewModels
 {
     public class MainViewModel : ViewModelBase
-    {
-        private int Offset => Convert.ToInt32(Properties.Resources.Offset);
+    {        
         private string _readFilePath = "";
 
         public ICommand ReadTextFileCommand => new RelayCommand(() =>
@@ -102,7 +102,7 @@ namespace Encrypter.ViewModels
             SaveFileCommand.Execute(null);
         }
 
-        private void ReadFileContent(string filePath)
+        private async void ReadFileContent(string filePath)
         {
             try
             {
@@ -110,10 +110,8 @@ namespace Encrypter.ViewModels
                 using (var reader = new StreamReader(file))
                 {
                     var text = reader.ReadToEnd();
-                    var convertedFrom64Base = Convert.FromBase64String(text);
-                    var unicodeString = Encoding.Unicode.GetString(convertedFrom64Base);
-                    var encrypted = GetEncryptedString(unicodeString);
-                    TextRead = encrypted;
+                    var worker = new CryptWorker(text);
+                    TextRead = await worker.GetEncryptedText(new Keys { FirstKey = SecretReadKey, SecondKey = SecondSecretReadKey });                    
                 }
             }
             catch (ArgumentException)
@@ -126,113 +124,21 @@ namespace Encrypter.ViewModels
             }
         }
 
-        private void SaveFileContent(string filePath)
+        private async void SaveFileContent(string filePath)
         {
             try
             {
                 using (var newFile = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 using (var writer = new StreamWriter(newFile))
                 {
-                    var text = GetCryptedString(TextWrite);
-                    var bytes = Encoding.Unicode.GetBytes(text);
-                    var crypted = Convert.ToBase64String(bytes);
-                    writer.Write(crypted);
+                    var worker = new CryptWorker(TextWrite);
+                    writer.Write(await worker.GetCryptedText(new Keys { FirstKey = SecretWriteKey, SecondKey = SecondSecretWriteKey }));
                 }
             }
             catch (Exception ex)
             {
                 TextRead = ex.Message;
             }
-        }
-
-        private string GetCryptedString(string text)
-        {
-            try
-            {
-                var builder = new StringBuilder();
-                var offset = GetCharactersSum(SecretWriteKey, SecondSecretWriteKey) + Offset;
-                int index = 0;
-                foreach (var c in text)
-                {
-                    var element = Convert.ToChar(((c + offset + GetCharacterOffset(SecretWriteKey, SecondSecretWriteKey, index)) % 512));
-                    builder.Append(element);
-                    index++;
-                }
-
-                return builder.ToString();
-            }
-            catch (Exception ex)
-            {
-                TextRead = ex.Message;
-                return "";
-            }
-        }
-
-        private string GetEncryptedString(string text)
-        {
-            try
-            {
-                var builder = new StringBuilder();
-                var offset = GetCharactersSum(SecretReadKey, SecondSecretReadKey) + Offset;
-                int index = 0;
-                foreach (var c in text)
-                {
-                    var currentOffset = offset + GetCharacterOffset(SecretReadKey, SecondSecretReadKey, index);
-                    var baseModulo = currentOffset % 512;
-                    char character;
-                    if (baseModulo > c)
-                    {
-                        var x = currentOffset / 512;
-                        var y = x + 1;
-                        var offsetUsedWhileCrypting = y * 512 + c;
-                        character = Convert.ToChar(offsetUsedWhileCrypting - currentOffset);
-                    }
-                    else
-                    {
-                        var y = currentOffset / 512;
-                        var offsetUsedWhileCrypting = y * 512 + c;
-                        character = Convert.ToChar(offsetUsedWhileCrypting - currentOffset);
-                    }
-
-                    builder.Append(character);
-                    index++;
-                }
-
-                return builder.ToString();
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
-
-        private int GetCharactersSum(string text1, string text2)
-        {
-            if (text1 == null || text2 == null)
-            {
-                return 0;
-            }
-
-            int sum = 0;
-            int index = 2;
-            foreach (var c in text1)
-            {
-                sum += (c * index++ + 211) / 5;
-            }
-            foreach (var c in text2)
-            {
-                sum += (c * index++ + 132) / 4;
-            }
-
-            return sum;
-        }
-
-        private int GetCharacterOffset(string text1, string text2, int index)
-        {
-            var c1 = text1.Length > 0 ? text1[(index + 3)% text1.Length] : 'x' + index;
-            var c2 = text2.Length > 0 ? text2[(index + 11) % text2.Length] : '$' + index;
-
-            return (7 * c1) % 412 + (11 * c2) % 371;
-        }
+        }        
     }
 }
